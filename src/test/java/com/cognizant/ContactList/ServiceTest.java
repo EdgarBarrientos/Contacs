@@ -1,5 +1,6 @@
 package com.cognizant.ContactList;
 
+import com.cognizant.ContactList.DTO.ContactDTO;
 import com.cognizant.ContactList.Domains.ContactList;
 import com.cognizant.ContactList.Repositories.ContactListRepository;
 import com.cognizant.ContactList.Services.ContactListService;
@@ -15,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.hamcrest.Matchers.is;
@@ -38,7 +38,22 @@ public class ServiceTest {
         when(repo.findAll()).thenReturn(listOfContacts);
         List<ContactList> actualList = contactService.findAllContacts();
         assertEquals(listOfContacts, actualList);
+    }
 
+    @Test
+    public void testSaveContact() throws Exception{
+        String contactJson = new ContactsSetup().getJSON("/Contact.json");
+        ContactList contactList = new ObjectMapper().readValue(contactJson,ContactList.class);
+
+        String contactSaveJson = new ContactsSetup().getJSON("/ContactSave.json");
+        ContactList saveContact = new ObjectMapper().readValue(contactSaveJson,ContactList.class);
+
+        when(repo.save(contactList)).thenReturn(saveContact);
+
+        ContactDTO expectedDTO = contactService.transformModelToDTO(saveContact);
+        ContactDTO actualDTO = contactService.save(contactList);
+
+        assertTrue(expectedDTO.equals(actualDTO));
     }
 
 
