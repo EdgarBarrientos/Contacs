@@ -17,7 +17,7 @@ public class ContactsSetup {
         return listOfContacts;
     }
 
-    private String getJSON(String path) throws Exception {
+    public String getJSON(String path) throws Exception {
         return new String(this.getClass().getResourceAsStream(path).readAllBytes());
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +39,15 @@ public class ContactListApiTest {
                 .andExpect(status().isOk())
         .andExpect( jsonPath("length()" ).value(listOfContacts.size()) );
 
+    }
+
+    @Test
+    public void createContactTest() throws Exception{
+        String contactJson = new ContactsSetup().getJSON("/Contact.json");
+        mockMvc.perform(post("/Contact").
+                contentType(MediaType.APPLICATION_JSON).
+                content(contactJson)).
+                andExpect(status().isCreated());
     }
 
 

@@ -17,4 +17,8 @@ public class ContactListService {
 
         return repo.findAll();
     }
+
+    public ContactList save(ContactList contact) {
+         return repo.save(contact);
+    }
 }
