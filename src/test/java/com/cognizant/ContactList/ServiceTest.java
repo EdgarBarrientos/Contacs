@@ -32,19 +32,9 @@ public class ServiceTest {
     @InjectMocks
     private ContactListService contactService;
 
-    private String getJSON(String path) throws Exception {
-       return new String(this.getClass().getResourceAsStream(path).readAllBytes());
-    }
-
     @Test
     public void Test_AllContacts() throws Exception {
-        String contactList = getJSON("/ContactList.json");
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<ContactList> listOfContacts = new ObjectMapper().
-                readValue(contactList,new TypeReference<List<ContactList>>(){});
-
-
+        List<ContactList> listOfContacts = new ContactsSetup().getContactLists();
         when(repo.findAll()).thenReturn(listOfContacts);
         List<ContactList> actualList = contactService.findAllContacts();
         assertEquals(listOfContacts, actualList);
