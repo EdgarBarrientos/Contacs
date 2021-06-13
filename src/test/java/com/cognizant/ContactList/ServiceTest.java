@@ -36,8 +36,10 @@ public class ServiceTest {
     public void Test_AllContacts() throws Exception {
         List<ContactList> listOfContacts = new ContactsSetup().getContactLists();
         when(repo.findAll()).thenReturn(listOfContacts);
-        List<ContactList> actualList = contactService.findAllContacts();
-        assertEquals(listOfContacts, actualList);
+        List<ContactDTO> listOfDTOContacts = new ContactsSetup().getContactDTOLists();
+
+        List<ContactDTO> actualList = contactService.findAllContacts(java.util.Optional.empty());
+        assertEquals(listOfDTOContacts, actualList);
     }
 
     @Test
@@ -53,7 +55,7 @@ public class ServiceTest {
         ContactDTO expectedDTO = contactService.transformModelToDTO(saveContact);
         ContactDTO actualDTO = contactService.save(contactList);
 
-        assertTrue(expectedDTO.equals(actualDTO));
+        assertEquals(expectedDTO, actualDTO);
     }
 
 

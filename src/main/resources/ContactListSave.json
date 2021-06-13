@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "givenName": "Paul",
+    "surName": "Brown",
+    "phoneNumber": "2149877865"
+  },
+  {
+    "id": "2",
+    "givenName": "Peter",
+    "surName": "Johnson",
+    "phoneNumber": "21498778635"
+  },
+  {
+    "id": "3",
+    "givenName": "Liz",
+    "surName": "Brown",
+    "phoneNumber": "2149877865"
+  }
+]

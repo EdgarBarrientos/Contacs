@@ -13,9 +13,9 @@ public class ContactDTO {
 
     @Override
     public boolean equals(Object o){
+        if (!o.getClass().equals(ContactDTO.class))
+            return false;
         ContactDTO dto = (ContactDTO) o;
-        if(this.id.equals( dto.getId()))
-            return true;
-        else return false;
+        return this.givenName.equals(dto.getGivenName()) && this.surName.equals(dto.getSurName());
     }
 }
