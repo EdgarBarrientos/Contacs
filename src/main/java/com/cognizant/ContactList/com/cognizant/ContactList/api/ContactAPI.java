@@ -3,9 +3,7 @@ package com.cognizant.ContactList.com.cognizant.ContactList.api;
 import com.cognizant.ContactList.DTO.ContactDTO;
 import com.cognizant.ContactList.Domains.ContactList;
 import com.cognizant.ContactList.Services.ContactListService;
-import com.cognizant.ContactList.Specifications.ContactSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,35 +20,38 @@ public class ContactAPI {
 
 
     @PostMapping("/Contact")
-    public ResponseEntity createContact(@RequestBody ContactList contact){
-        return new ResponseEntity(service.save(contact),HttpStatus.CREATED);
+    public ResponseEntity<ContactDTO> createContact(@RequestBody ContactList contact){
+        return new ResponseEntity<>(service.save(contact),HttpStatus.CREATED);
     }
 
     @GetMapping("/Contact/{id}")
-    public ResponseEntity getContactByID(@RequestParam Long id){
+    public ResponseEntity getContactByID(@PathVariable Long id){
         ContactDTO contact= service.findContactByID(id);
         if (contact==null)
             return new ResponseEntity(id,HttpStatus.NOT_FOUND);
         else
             return  new ResponseEntity(contact,HttpStatus.OK);
     }
-    @RequestMapping( value = {"/Contacts","/Contacts/{name}","/Contacts/{surname}","/Contacts/{name}/{surname}"}, method = RequestMethod.GET)
-    public ResponseEntity getContactByNameSurname(@PathVariable(value = "givenName",required = false) String givenName,
-                                                                    @PathVariable(value = "surname",required = false) String surname){
+    @RequestMapping( value = {"/Contacts","/Contacts/{givenName}","/Contacts/{surName}","/Contacts/{givenName}/{surName}"}, method = RequestMethod.GET)
+    public ResponseEntity<List<ContactDTO>> getContactByNameSurname(@RequestParam(value = "givenName",required = false) String givenName,
+                                                                    @RequestParam(value = "surName",required = false) String surName){
 
         List<ContactDTO> response= new ArrayList<>();
         ContactList filter= new ContactList();
+        boolean findname = false, findsurname = false;
 
         if(givenName!=null)
-            filter.setGivenName(givenName);
-        if(surname!=null)
-            filter.setSurName(surname);
+            findname=true;
+        if(surName!=null)
+            findsurname=true;
 
-        Specification<ContactList> spec= new ContactSpecification(filter);
-        if (givenName!=null || surname!=null)
-            return new ResponseEntity(service.findAllContacts(Optional.of(spec)), HttpStatus.OK);
+        //ContactList> spec= new ContactSpecification(filter);
+        if (givenName!=null || surName!=null)
+            return new ResponseEntity<>(service.findAllContacts(findname?Optional.of(givenName):Optional.empty(),
+                                                                findsurname?Optional.of(surName):Optional.empty()),
+                                                                HttpStatus.OK);
         else
-            return new ResponseEntity(service.findAllContacts(Optional.empty()), HttpStatus.OK);
+            return new ResponseEntity<>(service.findAllContacts(Optional.empty(),Optional.empty()), HttpStatus.OK);
 
 
     }

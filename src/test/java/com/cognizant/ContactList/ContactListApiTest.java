@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,26 +37,31 @@ public class ContactListApiTest {
     @Test
     public void getContactsTest() throws Exception{
         List<ContactDTO> listOfContacts = new ContactsSetup().getContactDTOLists();
-        when(service.findAllContacts(java.util.Optional.empty())).thenReturn(listOfContacts);
+        when(service.findAllContacts(Optional.empty(),Optional.empty())).thenReturn(listOfContacts);
 
         mockMvc.perform(get("/Contacts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
         .andExpect( jsonPath("length()" ).value(listOfContacts.size()) );
 
     }
-//    @Test
-//    public void getContactsWithSpecTest() throws Exception{
-//        List<ContactDTO> listOfContacts = new ContactsSetup().getContactDTOLists();
-//        ContactList filter= new ContactList();
-//        filter.setSurName("Test");
-//        Specification<ContactList> spec= new ContactSpecification(filter);
-//        when(service.findAllContacts()).thenReturn(listOfContacts.stream().findAny());
-//
-//        mockMvc.perform(get("/Contacts").contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect( jsonPath("length()" ).value(listOfContacts.size()) );
-//
-//    }
+    @Test
+    public void getContactsWithSpecTest() throws Exception{
+        List<ContactDTO> listOfContacts = new ContactsSetup().getContactDTOLists();
+        ContactList filter= new ContactList();
+        filter.setSurName("Test");
+        //Optional<Specification<ContactList>> spec= Optional.of(new ContactSpecification(filter));
+        when(service.findAllContacts(Optional.empty(),Optional.of("Test"))).thenReturn(listOfContacts);
+
+        mockMvc.perform(get("/Contacts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("givenName","Paul")
+                        .param("surName","Garcia")
+                        )
+                .andExpect(status().isOk())
+               // .andExpect( jsonPath("length()" ).value(listOfContacts.size()) )
+        ;
+
+    }
 
     @Test
     public void createContactTest() throws Exception{

@@ -4,6 +4,7 @@ import com.cognizant.ContactList.DTO.ContactDTO;
 import com.cognizant.ContactList.Domains.ContactList;
 import com.cognizant.ContactList.Repositories.ContactListRepository;
 import com.cognizant.ContactList.Services.ContactListService;
+import com.cognizant.ContactList.Specifications.ContactSpecification;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,15 +13,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -38,9 +44,23 @@ public class ServiceTest {
         when(repo.findAll()).thenReturn(listOfContacts);
         List<ContactDTO> listOfDTOContacts = new ContactsSetup().getContactDTOLists();
 
-        List<ContactDTO> actualList = contactService.findAllContacts(java.util.Optional.empty());
+        List<ContactDTO> actualList = contactService.findAllContacts(Optional.empty(),Optional.empty());
         assertEquals(listOfDTOContacts, actualList);
     }
+
+    @Test
+    public void getContactsWithSpecTest() throws Exception{
+        List<ContactList> listOfContacts = new ContactsSetup().getContactLists();
+        List<ContactDTO> listOfDTOContacts = new ContactsSetup().getContactDTOLists();
+        List<ContactDTO> expected =listOfDTOContacts.stream()
+                        .filter(c -> c.getSurName().contains("Brown"))
+                        .collect(Collectors.toList());
+        when(repo.findAll()).thenReturn(listOfContacts);
+
+        List<ContactDTO> actualListOfDTOContacts=contactService.findAllContacts(Optional.empty(),Optional.of("Brown"));
+        assertEquals(expected, actualListOfDTOContacts);
+    }
+
 
     @Test
     public void testSaveContact() throws Exception{
